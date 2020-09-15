@@ -13,21 +13,22 @@
 - test with match terms
 
 ## run application locally with just npm and yarn
-#### backend component
+#### first run backend component
 - cd backend
 - rename .env.EXAMPLE to .env
 - npm install
 - npm run dev 
-##### or run
+###### or run
 - npm run build
 - npm start
 - go to localhost:8080
 - test api for serach bar go to localhost:8080/api/search/acme
 
-#### frontend component
+#### then run frontend component
 - cd frontend
 - yarn install
 - yarn build
+- go localhost:3000 to test the whole application
 
 ## additional features
 - I've implemented Docker containerization and Nginx reverse proxy to provide an easier environment to run the application.
