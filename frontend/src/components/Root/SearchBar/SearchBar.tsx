@@ -24,7 +24,7 @@ const SearchBar: FunctionComponent = () => {
 
   const onSearchClick = (event):void => {
     const inputValue = searchRef.current?.value;
-    if(event.type === 'click' || event.key === 'Enter') {
+    if((event.type === 'click' || event.key === 'Enter') && inputValue != '') {
       axios(`http://localhost:8080/api/search/${inputValue}`)
         .then(res => {
             setSearchResult(res.data);
@@ -35,92 +35,60 @@ const SearchBar: FunctionComponent = () => {
         })
     }
   }
-      //componentdidmout will auto render bookmark api
 
-    //when button bookmark its true
-      //you can see it on the page as well as the bookmarked button
-      // bookmark button will only render  the bookmarkred ones and only appear when click is true
+  const update_OnTag_State = (react_State:Array<Object>, react_set_state:any, tagged_id:string):void => {
+    let current_React_State = [...react_State];
+    current_React_State.forEach(item => item['uuid'] === tagged_id ? item['isTag'] = !item['isTag'] : null)
+    react_set_state(current_React_State);
+  };
 
+  const update_Other_State_Ontag = (react_State:Array<Object>, react_set_state:any, index:number, current_tagged_state:Array<Object>):void => {
+    let current_State =  [...react_State];
+    let current_Content = current_State[index];
+    current_Content['isTag'] = !current_Content['isTag'];
     
-    //when the bookmarked one becomes true
-      //update both pied and search state
-      //add to the bookmark state, call the api to update the redis database to store that book
-
-    //when the bookmarked one becomes false
-      //delete from book mark state, call the api to update thee redis to delte to update the bookmark
-      //toggle the pined and search content state of bookmark to be true
+    //update or delete on the tag page
+    if(current_Content['isTag'] === true) {
+      current_tagged_state.push(current_Content)
+    } else {
+      let index = current_tagged_state.indexOf(current_Content);
+      current_tagged_state.splice(index, 1);
+    }
+    setTaggedResult({data:[...current_tagged_state], toggle: taggedResult.toggle});
+    react_set_state(current_State);
+  }
 
   const onTag = (index:number, status:string):void => {
     let current_Tagged_State =[...taggedResult.data];
-    console.log('hi')
+    if(status === 'tagged') {
+      let current_Tagged_Content = current_Tagged_State[index];
+      let current_Tagged_uuid = current_Tagged_Content['uuid'];
+      current_Tagged_State.splice(index, 1);
+      setTaggedResult({data:[...current_Tagged_State], toggle: taggedResult.toggle});
+      //update search
+      update_OnTag_State(searchResult, setSearchResult, current_Tagged_uuid);
+      //update tagged
+      update_OnTag_State(pinedResult, setPinedResult, current_Tagged_uuid);
 
-    // if(status === 'tagged') {
-    //   let current_Tagged_Content = current_Tagged_State[index];
+    } else if(status === 'search') {
+      update_Other_State_Ontag(searchResult, setSearchResult, index, current_Tagged_State)
 
-    //   let current_Tagged_uuid = current_Tagged_Content['uuid'];
-
-    //   current_Tagged_State.splice(index, 1);
-    //   setTaggedResult({data:[...current_Tagged_State], toggle: taggedResult.toggle});
-
-    //   //update search
-    //   let current_Search_State = [...searchResult];
-    //   current_Search_State.forEach(item => {
-    //     if(item['uuid'] === current_Tagged_uuid) return item['isTag'] = !item['isTag']
-    //   })
-    //   setSearchResult(current_Search_State);
-
-
-    //   //update tagged
-    //   let current_Pined_State = [...pinedResult];
-    //   current_Pined_State.forEach(item => {
-    //     if(item['uuid'] === current_Tagged_uuid) return item['isTag'] = !item['isTag']
-    //   })
-    //   setPinedResult(current_Pined_State);
+    } else if(status === 'pined') {
+      //update all 3
+      update_Other_State_Ontag(pinedResult, setPinedResult, index, current_Tagged_State)
 
 
-    // } else if(status === 'search') {
-    //   // console.log(Search_content_Ref.current.children[index]);
-    //   let current_Search_State =  [...searchResult];
-    //   let current_Search_Content = current_Search_State[index];
-    //   current_Search_Content['isTag'] = !current_Search_Content['isTag'];
-      
-    //   current_Tagged_State.push(current_Search_Content);
-
-    //   setTaggedResult({data:[...current_Tagged_State], toggle: taggedResult.toggle});
-
-    //   setSearchResult(current_Search_State);
-    // } else if(status === 'pined') {
-    //   // console.log(Pined_content_Ref.current.children[index])
-
-    //   //update pined list
-    //   let current_pined_State =[...pinedResult];
-    //   let current_pined_Content = current_pined_State[index];
-    //   let current_pined_uuid = current_pined_Content['uuid'];
-    //   current_pined_Content['isTag'] = !current_pined_Content['isTag'];
-    //   setPinedResult(current_pined_State)
-
-    //   setTaggedResult({data:[...current_Tagged_State], toggle: taggedResult.toggle});
-
-    //   //update search list
-    //   let current_Search_State =  [...searchResult];
-    //   current_Search_State.forEach(item => {
-    //     if(item['uuid'] === current_pined_uuid) return item['isTag'] = !item['isTag']
-    //   })
-    //   setSearchResult(current_Search_State);
-    // }
-
-
+    }
   }
 
   const onPin = (index:number, status:string):void => {
-
     if(status === 'search') {
       let current_Search_Content = searchResult[index];
       current_Search_Content['isPin'] = !current_Search_Content['isPin'];
       const new_Pined_Result = [current_Search_Content,...pinedResult];
       Search_content_Ref.current.children[index].classList.add('hidden');
       setPinedResult(new_Pined_Result);
-    } else if (status == 'pined') {
+    } else if ( status === 'pined') {
       //update pined state
       let new_Pined_Result = [...pinedResult];
       let uuid = new_Pined_Result[index]['uuid'];
@@ -131,8 +99,7 @@ const SearchBar: FunctionComponent = () => {
       let new_Search_Result = [...searchResult]
       new_Search_Result.forEach(item => {
         if(item['uuid'] === uuid) return item['isPin'] = !item['isPin']
-      })
-      ;
+      });
       document.getElementById(`${uuid} search`) === null ? null : document.getElementById(`${uuid} search`).className = 'column';
       setSearchResult(new_Search_Result)
     }
@@ -145,8 +112,7 @@ const SearchBar: FunctionComponent = () => {
     status == 'search' ? setSearchResult(newstate) : setPinedResult(newstate);
   }
 
-  const searchContent = (state:Array<object>, status:string): string| Object => {
-    console.log(state, status);
+  const create_search_Content = (state:Array<object>, status:string): string| Object => {
     let element = state.map((obj, i) => {
       return (
         <div className='column'  id={`${obj['uuid']} ${status}`} key={i} >
@@ -180,7 +146,7 @@ const SearchBar: FunctionComponent = () => {
   
   //dynamically generate search content;
   const content_with_style = (ref_type:React.MutableRefObject<HTMLInputElement>, div_type: Array<Object>, string_type:string, style:string) => 
-    <ContentDiv ref={ref_type} style={{display:`${style}`}}> {searchContent(div_type, `${string_type}`)} </ContentDiv>;
+    <ContentDiv ref={ref_type} style={{display:`${style}`}}> {create_search_Content(div_type, `${string_type}`)} </ContentDiv>;
   
   return (  
     <div>
@@ -206,16 +172,6 @@ const SearchBar: FunctionComponent = () => {
         content_with_style(Pined_content_Ref, pinedResult, 'pined', ''),
         content_with_style(Search_content_Ref, searchResult, 'search', '')]
       }
-      {/* {taggedResult.toggle == true ?
-        content_with_style(Pined_content_Ref, pinedResult, 'pined', 'none')
-       :
-        content_with_style(Pined_content_Ref, pinedResult, 'pined', '')
-      }
-      {taggedResult.toggle == true ? 
-        content_with_style(Search_content_Ref, searchResult, 'search', 'none')
-        :
-        content_with_style(Search_content_Ref, searchResult, 'search', '')
-      } */}
     </div>
   )
 }
