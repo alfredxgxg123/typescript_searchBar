@@ -1,4 +1,5 @@
 # Acme-search Bar
+I decided to learn and use TypeScript on the fly for this project Since TypeScript is more favorable for this project. Please bear with me if the set up seems a bit off.
 
 ## clone instruction
 - git clone https://github.com/alfredxgxg123/typescript_searchBar.git
