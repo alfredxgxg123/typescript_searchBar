@@ -10,6 +10,7 @@ I decided to learn and use TypeScript on the fly for this project Since TypeScri
 - cd to the folder
 - docker-compose build
 - docker-compose up
+- wait a few seconds
 - go to localhost 
 - test with match terms
 
