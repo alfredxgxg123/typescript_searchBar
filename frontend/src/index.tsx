@@ -13,7 +13,7 @@ const GlobalStyle = createGlobalStyle`
 
 render(
     <>
-        <GlobalStyle />
-        <Root />
+      <GlobalStyle />
+      <Root />
     </>
     , document.getElementById("app"));

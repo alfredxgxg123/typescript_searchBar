@@ -68,8 +68,9 @@ const SearchBar: FunctionComponent = () => {
       setTaggedResult({data:[...current_Tagged_State], toggle: taggedResult.toggle});
      
       //update search or update tagged
-      current_Tagged_pined === true ? update_OnTag_State(pinedResult, setPinedResult, current_Tagged_uuid):
-      update_OnTag_State(searchResult, setSearchResult, current_Tagged_uuid);
+      current_Tagged_pined === true ? 
+        update_OnTag_State(pinedResult, setPinedResult, current_Tagged_uuid):
+        update_OnTag_State(searchResult, setSearchResult, current_Tagged_uuid);
       
       
 

@@ -1,0 +1,11 @@
+.git
+node_modules
+tmp
+*.env
+*.yaml
+*.yml
+*.pyc
+.env
+.dockerignore
+.gitignore
+.DS_Store

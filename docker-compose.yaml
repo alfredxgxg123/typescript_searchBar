@@ -1,0 +1,24 @@
+version: "3.8"
+
+services: 
+    backend:
+        build: ./backend
+        container_name: backend
+        restart: always
+        environment: 
+            - NODE_ENV=development
+            - SERVER_PORT=8080
+        ports:
+            - "8080:8080"
+    frontend:
+        build: ./frontend
+        container_name: frontend
+        restart: always
+        ports:
+            - 3000
+    nginx:
+        build: ./nginx
+        container_name: nginx
+        restart: always
+        ports:
+            - "80:80"
