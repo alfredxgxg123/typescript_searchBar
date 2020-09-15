@@ -36,7 +36,7 @@ const SearchBar: FunctionComponent = () => {
     }
   }
 
-  const update_OnTag_State = (react_State:Array<Object>, react_set_state:any, tagged_id:string):void => {
+  const update_OnTag_State = (react_State:Array<Object>, react_set_state:any, tagged_id:string):void => {  
     let current_React_State = [...react_State];
     current_React_State.forEach(item => item['uuid'] === tagged_id ? item['isTag'] = !item['isTag'] : null)
     react_set_state(current_React_State);
@@ -63,21 +63,21 @@ const SearchBar: FunctionComponent = () => {
     if(status === 'tagged') {
       let current_Tagged_Content = current_Tagged_State[index];
       let current_Tagged_uuid = current_Tagged_Content['uuid'];
+      let current_Tagged_pined = current_Tagged_Content['isPin'];
       current_Tagged_State.splice(index, 1);
       setTaggedResult({data:[...current_Tagged_State], toggle: taggedResult.toggle});
-      //update search
+     
+      //update search or update tagged
+      current_Tagged_pined === true ? update_OnTag_State(pinedResult, setPinedResult, current_Tagged_uuid):
       update_OnTag_State(searchResult, setSearchResult, current_Tagged_uuid);
-      //update tagged
-      update_OnTag_State(pinedResult, setPinedResult, current_Tagged_uuid);
+      
+      
 
     } else if(status === 'search') {
       update_Other_State_Ontag(searchResult, setSearchResult, index, current_Tagged_State)
 
-    } else if(status === 'pined') {
-      //update all 3
+    } else {
       update_Other_State_Ontag(pinedResult, setPinedResult, index, current_Tagged_State)
-
-
     }
   }
 
